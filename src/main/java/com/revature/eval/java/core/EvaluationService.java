@@ -1,5 +1,6 @@
 package com.revature.eval.java.core;
 
+import java.io.Console;
 import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,26 @@ public class EvaluationService {
 	 */
 	public String reverse(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+			
+
+		   char[] newStr = string.toCharArray();
+		   
+		    
+		    int len = newStr.length;
+		    int start = 0, end = len - 1;
+
+		    while(start <= end) {
+		      char temp = newStr[start];
+		      newStr[start] = newStr[end];
+		      newStr[end] = temp;
+		      start++;
+		      end--;
+		    }
+
+	
+		String outStr = String.copyValueOf(newStr);
+		
+		return outStr;
 	}
 
 	/**
@@ -28,7 +48,17 @@ public class EvaluationService {
 	 */
 	public String acronym(String phrase) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+		String rtn = "";
+		phrase = phrase.replaceAll("-", " ");
+		String[]  phraseArr = phrase.split(" ");
+		
+			for(String a : phraseArr) {
+				rtn += a.split("")[0].toUpperCase();
+				//System.out.print(a.split("")[0]);	
+			}
+	
+	return rtn;
 	}
 
 	/**
@@ -82,16 +112,25 @@ public class EvaluationService {
 
 		public boolean isEquilateral() {
 			// TODO Write an implementation for this method declaration
+		    if(this.sideOne == this.sideTwo && this.sideTwo == this.sideThree)
+		        return true;
+		    
 			return false;
 		}
 
 		public boolean isIsosceles() {
 			// TODO Write an implementation for this method declaration
+			if(this.sideOne == this.sideTwo || this.sideTwo == this.sideThree || this.sideThree == this.getSideOne())
+				return true;
+				
 			return false;
 		}
 
 		public boolean isScalene() {
 			// TODO Write an implementation for this method declaration
+			if(this.sideOne != this.sideTwo && this.sideTwo != this.sideThree)
+				return true;
+			
 			return false;
 		}
 
