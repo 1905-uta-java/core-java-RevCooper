@@ -2,6 +2,11 @@ package com.revature.eval.java.core;
 
 import java.io.Console;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +60,7 @@ public class EvaluationService {
 		
 			for(String a : phraseArr) {
 				rtn += a.split("")[0].toUpperCase();
-				//System.out.print(a.split("")[0]);	
+			
 			}
 	
 	return rtn;
@@ -153,7 +158,46 @@ public class EvaluationService {
 	 */
 	public int getScrabbleScore(String string) {
 		// TODO Write an implementation for this method declaration
-		return 0;
+		
+		
+	    String ones = "AEIOULNRST";
+	    String twos = "DG";
+	    String threes = "BCMP";
+	    String fours ="FHVWY";
+	    String fives = "K";
+	    String eights = "X";
+	    String tens = "Z";
+
+		 // String word = "OxyphenButazone";
+		  int score = 0;
+
+		  String[] wordArr = string.split("");
+		  
+		  
+		  for(String i : wordArr){
+		    if(ones.indexOf(i) != -1 || ones.toLowerCase().indexOf(i) != -1 )
+		        score += 1;
+
+		    if(twos.indexOf(i) != -1 || twos.toLowerCase().indexOf(i) != -1 )
+		        score += 2;
+
+		    if(threes.indexOf(i) != -1 || threes.toLowerCase().indexOf(i) != -1 )
+		        score += 3;
+
+		    if(fours.indexOf(i) != -1 || fours.toLowerCase().indexOf(i) != -1 )
+		        score += 4;
+
+		    if(fives.indexOf(i) != -1 || fives.toLowerCase().indexOf(i) != -1 )
+		        score += 5;
+
+		    if(eights.indexOf(i) != -1 || eights.toLowerCase().indexOf(i) != -1 )
+		        score += 8;
+
+		    if(tens.indexOf(i) != -1 || tens.toLowerCase().indexOf(i) != -1 )
+		        score += 10;
+		   }
+		
+		return score;
 	}
 
 	/**
@@ -189,7 +233,17 @@ public class EvaluationService {
 	 */
 	public String cleanPhoneNumber(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+		string = string.replaceAll("[.)(^$*:+?@!-]", "" ).replaceAll(" ", "").replaceAll("a", "2").replaceAll("b", "2").replaceAll("c", "2");
+		
+		if(string.length() != 10)
+		{
+		throw new IllegalArgumentException("error");	
+			//string = string.substring(1).replaceFirst("2", "1");
+		}else {
+		System.out.println(string);
+		return string;
+		}
 	}
 
 	/**
@@ -282,7 +336,26 @@ public class EvaluationService {
 	 */
 	public boolean isArmstrongNumber(int input) {
 		// TODO Write an implementation for this method declaration
-		return false;
+		
+		String stringNum = Integer.toString(input);
+		  int power = stringNum.length(); 
+		  String[] x = stringNum.split("");
+
+		  int sum = 0;
+		  
+     if(power == 1) {return true;}else {
+    	 
+
+		  for(String a : x)
+		  {
+		   sum += Math.pow(Integer.parseInt(a), power);
+		  }
+
+
+		 return (sum == (Integer.parseInt(stringNum)) );
+     }
+		
+		//return false;
 	}
 
 	/**
@@ -300,7 +373,23 @@ public class EvaluationService {
 	 */
 	public boolean isPangram(String string) {
 		// TODO Write an implementation for this method declaration
-		return false;
+		
+		  String[] Alpha = "abcdefghijklmnopqrstuvwxyz".split("");
+		  int b=0;
+
+		  for(String a : Alpha ){
+
+		    if(string.indexOf(a) != -1)
+		      b++;
+
+		  }
+
+		    System.out.println(b);
+
+		  if(b != 26) {return false;}else {return true;}
+			  
+		  
+		
 	}
 
 	
@@ -340,7 +429,75 @@ public class EvaluationService {
 
 		public String rotate(String string) {
 			// TODO Write an implementation for this method declaration
-			return null;
+			
+
+			  
+			  String[] x = "abcdefghijklmnopqrstuvwxyz".split("");
+			  String y = "abcdefghijklmnopqrstuvwxyz";
+
+			  String[] x2 = "abcdefghijklmnopqrstuvwxyz".toUpperCase().split("");
+			  String y2 = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+			  
+			  
+			  //Xiwxmrk 1 2 3 xiwxmrk
+			  
+			  String test2 = "";
+			  String[]  test = string.split(""); //31 "Let's eat, Grandma!"
+
+			  List<String> example = new ArrayList<>();
+			//List<String> list = new ArrayList<>(Arrays.asList("C", "C++", "Java"));
+			  
+			for(String a : x){
+
+			  example.add(a);
+
+			}
+
+			if(key > 13) { key = key + (key -1)/2; }else if(key < 13) { key = key * -1;}
+			 Collections.rotate(example,key);
+
+			for(String b : test){
+
+			if(y.indexOf(b) > -1) {
+			  test2 += example.get(y.indexOf(b));
+			}else {
+			  test2 += b;
+			}
+			//System.out.println((y.indexOf(b)));
+
+			}
+
+			 System.out.println(test2);
+
+
+			String[] test3 = test2.split("");
+			List<String> example2 = new ArrayList<>();
+
+			for(String a: x2){
+
+			example2.add(a);
+
+			}
+
+			String f = "";
+			Collections.rotate(example2,key);
+
+			for(String b: test3){
+
+			if(y2.indexOf(b) > -1){
+			  f += example2.get(y2.indexOf(b));
+			}else {
+			  f += b;
+			}
+
+
+
+
+			}
+
+			System.out.println(f + " " + key);
+			
+			return f;
 		}
 
 	}
@@ -380,7 +537,65 @@ public class EvaluationService {
 		 */
 		public static String encode(String string) {
 			// TODO Write an implementation for this method declaration
-			return null;
+			
+			
+			
+			String testString = string.toLowerCase().replaceAll("[.)(^$*:+?@!-]", "" );
+			String[] stringArr = "abcdefghijklmnopqrstuvwxyz".split("");
+			String[] cipherArr = "zyxwvutsrqponmlkjihgfedcba".split("");
+
+			int i =0;
+			String a,b;
+
+			 Dictionary d = new Hashtable();
+
+			for(String p : stringArr)
+			{
+			  d.put(stringArr[i],cipherArr[i]);
+			  i++;
+			}
+			String[] testArr = testString.split("");
+
+		//	System.out.println(testArr.toString());
+			String newString = "";
+
+			for(String p : testArr)
+			{
+			  newString += d.get(p); 
+			}
+
+			newString = newString.replace("null", "");
+			//newString = newString.substring(1);
+		//	System.out.println(newString);
+
+
+			int x=1;
+			String render ="";
+			String[] toRender = newString.split("");
+
+			if( toRender[toRender.length -1] == " ")
+				toRender = Arrays.copyOf(toRender, toRender.length);
+			
+             
+			
+			for(String p : toRender)
+			{
+
+			render += p;
+
+			if(x%5==0)
+			    render += " ";
+
+			x++;
+			}
+
+		
+			
+		//	System.out.println(newString);
+			System.out.println(render.toString() );
+
+			  
+			return render;
 		}
 
 		/**
@@ -466,7 +681,45 @@ public class EvaluationService {
 	 */
 	public int solveWordProblem(String string) {
 		// TODO Write an implementation for this method declaration
-		return 0;
+		
+		String line = string;
+		
+		line =  line.substring(0, line.length()-1);
+		String[] lineArr = line.split(" ");
+
+		    int i =0;
+		    int answer=0;
+		    int[]  a = new int[2];
+		    String x = "2";
+		    String y = "A";
+
+		for(String j : lineArr){
+
+				try {
+					a[i] = Integer.parseInt(j);
+		      i++;
+		      
+
+				} catch(Exception e) {
+					System.out.println(false);
+				}
+		}
+
+
+		if(line.contains("plus") || line.contains("add") || line.contains("+"))
+		answer =  a[0] + a[1];
+
+		if(line.contains("substra") || line.contains("minus") || line.contains("-"))
+		answer =  a[0] - a[1];
+
+		if(line.contains("multipl") || line.contains("times") || line.contains("*"))
+		answer =  a[0] * a[1];
+
+		if( line.contains("divide") || line.contains("/"))
+		answer =  a[0] / a[1];
+		
+		
+		return answer;
 	}
 
 }
