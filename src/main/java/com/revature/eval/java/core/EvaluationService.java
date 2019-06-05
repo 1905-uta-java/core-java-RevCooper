@@ -257,7 +257,51 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		// TODO Write an implementation for this method declaration
-		return null;
+		
+			if(string.indexOf(" ") == -1) {
+			string = string.replaceAll(",", " ");
+		System.out.print(string);	
+		}
+		
+		if(string.indexOf("%\n") > -1) {
+			string = string.replaceAll("%\n", " ");
+		System.out.print(string);	
+		}
+		
+		String[] phraseArr =  string.split(" ");
+		
+		
+		HashSet hs = new HashSet();
+	
+		Dictionary d = new Hashtable();
+		String catcherStr = ""; 
+		List<String> list = new ArrayList<String>();
+		Map m = new HashMap();
+
+
+		for(String a : phraseArr){
+
+		    if( (hs.add(a)) == false){
+		      System.out.println(a);
+		      list.add(a);
+		      catcherStr += (a + " ");
+		    }else {
+		        list.add(a);
+
+		    }
+		}
+
+		for(String b : list)
+		{
+		m.put(b,Collections.frequency(list,b));
+		d.put(b,Collections.frequency(list,b)+1);
+		System.out.println(Collections.frequency(list,b));
+		}
+
+
+
+		System.out.println(m);
+		return m;
 	}
 
 	/**
