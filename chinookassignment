@@ -1,0 +1,449 @@
+-----------------------------------------------
+--- CHINOOK EXERCISE
+--- FATIN COOPER
+--- REVETURE 
+-----------------------------------------------
+
+--------------- 2.0 QUERY AND DML 
+--------------- 2.1 SELECT
+
+SELECT * 
+FROM EMPLOYEE;
+
+--B
+SELECT *
+FROM EMPLOYEE
+WHERE LASTNAME = 'KING';
+
+--C
+SELECT * 
+FROM EMPLOYEE
+WHERE FIRSTNAME = 'ANDREW' 
+AND REPORTSTO = NULL;
+
+--D
+SELECT * 
+FROM ALBUM 
+ORDER BY 'TITLE' DESC;
+
+--E
+SELECT * 
+FROM CUSTOMER 
+ORDER BY 'CITY' DESC;
+
+--F
+SELECT * 
+FROM INVOICE
+WHERE 'BILLING' 
+LIKE 'T%';
+
+--------------- 2.2 INSERT INTO
+-- A
+INSERT INTO Genre (GenreId, Name) VALUES (26, 'Psytrans Trance');
+INSERT INTO Genre (GenreId, Name) VALUES (27, 'Beat Peotry');
+
+-- B
+INSERT INTO EMPLOYEE (EmployeeId, LastName, FirstName, Title, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email) VALUES (13, 'Bobeson', 'Robert', 'Fullfilment', TO_DATE('1986-5-9 00:00:00','yyyy-mm-dd hh24:mi:ss'), TO_DATE('2003-8-14 00:00:00','yyyy-mm-dd hh24:mi:ss'), '10310 Pierre Ave NW', 'Edmonton', 'AB', 'Canada', 'T5K 2N1', '+1 (780) 428-9281', '+1 (780) 428-1256', 'robert@chinookcorp.com');
+INSERT INTO EMPLOYEE (EmployeeId, LastName, FirstName, Title, ReportsTo, BirthDate, HireDate, Address, City, State, Country, PostalCode, Phone, Fax, Email) VALUES (14, 'Cabel', 'Susan', 'Assistant Sales Manager', 1, TO_DATE('1968-6-13 00:00:00','yyyy-mm-dd hh24:mi:ss'), TO_DATE('2003-5-1 00:00:00','yyyy-mm-dd hh24:mi:ss'), '825 4 St SW', 'Calgary', 'AB', 'Canada', 'T2P 2T3', '+1 (403) 262-6341', '+1 (403) 262-9253', 'susqn@chinookcorp.com');
+
+-- C
+INSERT INTO Customer (CustomerId, FirstName, LastName, Address, City, Country, PostalCode, Phone, Email, SupportRepId) VALUES (60, 'Coleman', 'Henry', '15, Elmherst Road', 'Kansas City', 'Missouri', '64117', '+1 687 39883988', 'monkeydunker.gmail@.com', 3);
+INSERT INTO Customer (CustomerId, FirstName, LastName, Address, City, Country, PostalCode, Phone, Email, SupportRepId) VALUES (70, 'Davison', 'Enrico', '13 ,Sunset Boulevard', 'Los Angeles', 'United States', '90069', '1 213 22289999', 'Erico@yahoo.com', 3);
+
+---------------- 2.3 UPDATE
+-- A
+UPDATE CUSTOMER 
+SET FIRSTNAME = 'ROBERT', LASTNAME = 'WALTER'
+WHERE FIRSTNAME = 'AARON' AND LASTNAME = 'MITCHELL';
+
+-- B
+UPDATE ARTIST
+SET NAME = 'CCR'
+WHERE NAME = 'CREEDENCE CLEARWATER REVIVAL';
+
+---------------- 3.0 JOINS
+---------------- 3.1 INNER
+-- A
+SELECT FIRSTNAME || ' '  || LASTNAME || ' ' || INVOICEID
+FROM CUSTOMER
+INNER JOIN INVOICE 
+ON CUSTOMER.CUSTOMERID = INVOICE.CUSTOMERID;
+
+-- 3.2 OUTER
+SELECT CUSTOMER.CUSTOMERID || ' ' || CUSTOMER.FIRSTNAME || ' ' ||CUSTOMER.LASTNAME || ' ' || TOTAL
+FROM INVOICE 
+FULL OUTER JOIN CUSTOMER
+ON CUSTOMER.CUSTOMERID = INVOICE.CUSTOMERID;
+
+-- 3.3 RIGHT
+SELECT ALBUM.TITLE || ' ' || ARTIST.NAME
+FROM ALBUM 
+RIGHT OUTER JOIN ARTIST
+ON ALBUM.ARTISTID = ARTIST.ARTISTID;
+
+-- 3.4 CROSS
+SELECT ARTIST.NAME || ' ' || ALBUM.TITLE
+FROM ALBUM 
+CROSS JOIN  ARTIST 
+ORDER BY ARTIST.NAME DESC;
+
+-- 3.5 SELF
+SELECT E1.REPORTSTO 
+FROM EMPLOYEE E1, EMPLOYEE  E2
+WHERE E2.EMPLOYEEID = E1.REPORTSTO;
+
+-- 3.6 JOINED QUERIES
+-- A
+SELECT  CUSTOMER.FIRSTNAME || ' ' || CUSTOMER.LASTNAME AS FULLNAME, INVOICE.TOTAL
+FROM CUSTOMER, INVOICE
+WHERE CUSTOMER.CUSTOMERID = INVOICE.CUSTOMERID;
+
+-- B SKIP (Can't Seem to find where INVOICES crosses With EMPLOEE)
+-- Create a query that shows the employee that has made the 
+-- highest total value of sales (total of all invoices).
+SELECT   INVOICELINE.INVOICEID, CUSTOMER.CUSTOMERID, EMPLOYEE.EMPLOYEEID,
+         SUM(INVOICELINE.QUANTITY * INVOICELINE.UNITPRICE) AS TotalPrice
+FROM     INVOICELINE  JOIN INVOICE ON INVOICE.INVOICEID = INVOICELINE.INVOICEID
+ JOIN CUSTOMER ON CUSTOMER.CUSTOMERID = INVOICE.CUSTOMERID
+ JOIN EMPLOYEE ON EMPLOYEE.EMPLOYEEID = CUSTOMER.SUPPORTREPID
+GROUP BY  INVOICELINE.INVOICEID, CUSTOMER.CUSTOMERID, EMPLOYEE.EMPLOYEEID
+ORDER BY TotalPrice DESC;
+
+
+
+-- C
+-- 
+SELECT   INVOICEID,
+         SUM(QUANTITY * UNITPRICE) AS TotalPrice
+FROM     INVOICELINE
+GROUP BY INVOICEID
+ORDER BY TotalPrice DESC;
+
+
+-- 4.0 SQL Functions
+-- In this section you will be using the Oracle system functions, 
+-- as well as your own functions, to perform various actions against the database
+
+ 
+-- 4.1 System Defined Functions
+-- Create a function that returns the current time.
+-- Create a function that returns the length of name in MEDIATYPE table
+
+CREATE OR REPLACE FUNCTION SQLdate
+RETURN DATE IS the_sysdate DATE;
+
+BEGIN
+
+  SELECT sysdate
+    INTO the_sysdate
+    FROM dual;
+
+  RETURN the_sysdate;
+
+END;
+
+SELECT  SQLdate from dual;
+
+---- Create a function that returns the length of name in MEDIATYPE table
+
+CREATE OR REPLACE FUNCTION mediaLENGTH(LEN IN VARCHAR)
+RETURN NUMBER IS 
+
+BEGIN
+   RETURN LENGTH(LEN);
+END;
+    
+SELECT mediaLENGTH(y.name) AS X FROM MEDIATYPE Y;
+
+-- 4.2 System Defined Aggregate Functions
+-- Create a function that returns the average total of all invoices 
+-- Create a function that returns the most expensive track
+
+CREATE OR REPLACE FUNCTION totalINVOICE 
+RETURN NUMBER IS X NUMBER;
+
+BEGIN 
+    SELECT AVG(TOTAL) 
+    INTO X 
+    FROM invoice;
+RETURN x;
+END;
+
+SELECT totalINVOICE from dual;
+
+CREATE OR REPLACE FUNCTION maxTRACK
+RETURN NUMBER IS X NUMBER;
+
+BEGIN 
+    SELECT  MAX(UNITPRICE)
+    INTO X
+    FROM TRACK;
+RETURN X;
+END;
+
+SELECT maxTRACK FROM dual;
+
+-- 4.3 User Defined Scalar Functions
+-- Create a function that returns the average price of invoiceline items 
+-- in the invoiceline table
+
+CREATE OR REPLACE FUNCTION avgPRICE
+RETURN NUMBER IS X NUMBER;
+
+BEGIN
+     SELECT AVG(UNITPRICE)
+     INTO X 
+     FROM INVOICELINE;
+RETURN X;
+END; 
+ 
+SELECT avgPRICE FROM dual;
+
+
+
+-- 4.4 User Defined Table Valued Functions
+-- Create a function that returns a cursor with all employees who are born after 1968.
+
+-- CREATE OR REPLACE FUNCTION empAGES(X IN DATE)
+-- RETURN DATE IS
+
+-- BEGIN
+--    RETURN X;
+-- END; 
+ 
+-- SELECT empAGES(Y.BIRTHDATE) AS X FROM EMPLOYEE Y;
+
+CREATE OR REPLACE FUNCTION dateTABLE
+RETURN SYS_REFCURSOR  IS X SYS_REFCURSOR;
+
+BEGIN 
+OPEN X FOR
+SELECT ALS.*
+    FROM EMPLOYEE ALS  
+    WHERE ALS.BIRTHDATE > '01-JAN-1968';
+    RETURN X;
+END;
+/
+
+SELECT dateTABLE  FROM DUAL;
+
+-- 5.0 Stored Procedures
+-- In this section you will be creating and executing stored procedures. 
+-- You will be creating various types of stored procedures that take input 
+-- and output parameters.
+
+CREATE OR REPLACE PROCEDURE HLW
+IS 
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('HELLO DUDE');
+END;
+
+SET serveroutput on
+
+
+BEGIN
+    HLW();
+END;
+/
+-- 5.1 Basic Stored Procedure
+-- Create a stored procedure that selects the first and last names of all the employees.
+
+CREATE OR REPLACE PROCEDURE EMP_NAMES(NMS OUT SYS_REFCURSOR)
+IS 
+BEGIN
+    OPEN NMS FOR
+    SELECT FIRSTNAME, LASTNAME FROM EMPLOYEE;
+END;
+/
+
+VAR X REFCURSOR;
+EXECUTE EMP_NAMES(:X);
+PRINT X;
+
+-- 5.2 Stored Procedure Input Parameters
+-- Create a stored procedure that updates the personal information of an employee.
+ 
+CREATE OR REPLACE PROCEDURE UPDECST(
+
+EMPL IN EMPLOYEE.EMPLOYEEID%TYPE,  
+LAST IN EMPLOYEE.LASTNAME%TYPE,
+FIRS IN EMPLOYEE.FIRSTNAME%TYPE,
+TITL IN EMPLOYEE.TITLE%TYPE,
+REPO IN EMPLOYEE.REPORTSTO%TYPE,
+BIRT IN EMPLOYEE.BIRTHDATE%TYPE,
+HIRE IN EMPLOYEE.HIREDATE%TYPE,
+ADDR IN EMPLOYEE.ADDRESS%TYPE,
+CITY IN EMPLOYEE.CITY%TYPE,
+STAT IN EMPLOYEE.STATE%TYPE,
+COUN IN EMPLOYEE.COUNTRY%TYPE,
+POST IN EMPLOYEE.POSTALCODE%TYPE,
+PHON IN EMPLOYEE.PHONE%TYPE,
+FAX  IN EMPLOYEE.FAX%TYPE,
+EMAI IN EMPLOYEE.EMAIL%TYPE)
+
+AS 
+BEGIN 
+UPDATE EMPLOYEE A
+SET EMPLOYEEID = '100', LASTNAME = 'UPDATED', FIRSTNAME = 'HERE', 
+    TITLE = '', REPORTSTO = '', BIRTHDATE = '', HIREDATE = '', ADDRESS = '', CITY = '', STATE = '',
+    COUNTRY = '', POSTALCODE = '', PHONE = '' , FAX = '', EMAIL = 'o@gmail.com'
+
+
+WHERE A.EMPLOYEEID = 8;
+END;
+ 
+-- Create a stored procedure that returns the managers of an employee.
+
+CREATE OR REPLACE PROCEDURE BOSSESS(
+
+    EMPFN IN EMPLOYEE.EMPLOYEEID%TYPE,
+    MANFN OUT EMPLOYEE.FIRSTNAME%TYPE,
+    MANLN OUT EMPLOYEE.LASTNAME%TYPE,
+    MANID OUT EMPLOYEE.REPORTSTO%TYPE)
+IS 
+BEGIN 
+    SELECT  B.REPORTSTO
+    INTO    MANID
+    FROM    EMPLOYEE B
+    WHERE   B.EMPLOYEEID = EMPFN;
+    
+    SELECT A.FIRSTNAME, A.LASTNAME
+    INTO MANFN, MANLN
+    FROM EMPlOYEE A
+    WHERE A.EMPLOYEEID = MANID;
+END;
+
+
+
+-- 5.3 Stored Procedure Output Parameters
+-- Create a stored procedure that returns the name and company of a customer.
+
+CREATE OR REPLACE PROCEDURE GET_COMP(
+    CUST IN CUSTOMER.CUSTOMERID%TYPE,
+    COMPAN OUT CUSTOMER.COMPANY%TYPE) 
+IS
+BEGIN
+SELECT A.COMPANY
+INTO COMPAN
+FROM CUSTOMER A
+WHERE CUSTOMERID = 15;
+END;
+
+SELECT * FROM EMPLOYEE;
+
+-- 6.0 Transactions
+-- In this section you will be working with transactions. 
+-- Transactions are usually nested within a stored procedure.
+
+-- Create a transaction that given a invoiceId will delete that 
+-- invoice (There may be constraints that rely on this, find out 
+-- how to resolve them).
+CREATE OR REPLACE PROCEDURE DEL_REC(
+
+    RECID   IN INVOICE.INVOICEID%TYPE,
+    CID     IN INVOICE.CUSTOMERID%TYPE,
+    IND     IN INVOICE.INVOICEDATE%TYPE,
+    BLA     IN INVOICE.BILLINGADDRESS%TYPE,
+    BLCT    IN INVOICE.BILLINGCITY%TYPE,
+    BLS     IN INVOICE.BILLINGSTATE%TYPE,
+    BLCO    IN INVOICE.BILLINGCOUNTRY%TYPE,
+    BLP     IN INVOICE.BILLINGPOSTALCODE%TYPE,
+    BLIT    IN INVOICE.TOTAL%TYPE
+
+)
+IS
+BEGIN
+UPDATE INVOICE A
+SET INVOICEID = NULL 
+WHERE A.INVOICEID ='20';
+
+
+  
+    DELETE CHINOOK.INVOICE
+    WHERE  INVOICE.INVOICEID = NULL;
+    COMMIT;
+END;
+-- Create a transaction nested within a stored procedure that 
+-- inserts a new record in the Customer table
+
+CREATE OR REPLACE PROCEDURE INS_REC(
+
+CUSTO IN CUSTOMER.CUSTOMERID%TYPE,
+FIRST IN CUSTOMER.FIRSTNAME%TYPE,
+LASTN IN CUSTOMER.LASTNAME%TYPE,
+COMPA IN CUSTOMER.COMPANY%TYPE,
+ADDRE IN CUSTOMER.ADDRESS%TYPE,
+CITY  IN CUSTOMER.CITY%TYPE,
+STATE IN CUSTOMER.STATE%TYPE,
+COUNT IN CUSTOMER.COUNTRY%TYPE,
+POSTA IN CUSTOMER.POSTALCODE%TYPE,
+PHONE IN CUSTOMER.PHONE%TYPE,
+FAX   IN CUSTOMER.FAX%TYPE,
+EMAIL IN CUSTOMER.EMAIL%TYPE,
+SUPPU IN CUSTOMER.SUPPORTREPID%TYPE)
+IS 
+BEGIN
+
+INSERT INTO CUSTOMER (CustomerId, FirstName, LastName, Address, City, Country, PostalCode, Phone, Email, SupportRepId)
+VALUES (CUSTO, 'Coleman2', 'Henry2', '16, Elmherst Road2', 'Kansas City2', 'Missouri2', '64118', '+1 687 39883989', 'monkeydunker2.gmail@.com', 3);
+COMMIT;
+END;
+
+
+-- 7.0 Triggers
+-- In this section you will create various kinds of triggers that work when certain DML statements are executed on a table.
+-- 7.1 AFTER/FOR
+-- Create an after insert trigger on the employee table fired after a new record is inserted into the table.
+
+   
+CREATE OR REPLACE TRIGGER AFTINS 
+AFTER INSERT
+ON CUSTOMER 
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('RECORDED INSERTED INTO CUSTOMER. THIS IS A TRIGGER');
+END;
+
+-- Create an after update trigger on the album table that fires after a row is inserted in the table.
+
+CREATE OR REPLACE TRIGGER AFTUPS
+AFTER UPDATE
+ON ALBUM
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('ALBUM RECORD HAS BEEN UPDATE');
+END;
+
+-- Create an after delete trigger on the customer table that fires after a row is deleted from the table.
+CREATE OR REPLACE TRIGGER AFTDEL
+AFTER DELETE 
+ON CUSTOMER
+BEGIN
+      DBMS_OUTPUT.PUT_LINE('CUSTOMER RECORD HAS BEEN DELETED');
+END;
+
+-- 7.1 AFTER/FOR
+-- Create an after insert trigger on the employee table fired after a new record is inserted into the table.
+CREATE OR REPLACE TRIGGER AFTINSEMP
+AFTER INSERT
+ON EMPLOYEE 
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('RECORDED INSERTED INTO CUSTOMER. THIS IS A TRIGGER');
+END;
+
+-- Create an after update trigger on the album table that fires after a row is inserted in the table.
+CREATE OR REPLACE TRIGGER AFTUPSALB
+AFTER INSERT
+ON ALBUM
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('ALBUM RECORD HAS BEEN INSERTED');
+END;
+
+
+-- Create an after delete trigger on the customer table that fires after a row is deleted from the table.
+CREATE OR REPLACE TRIGGER AFTDELCSTM
+AFTER UPDATE
+ON CUSTOMER
+BEGIN 
+    DBMS_OUTPUT.PUT_LINE('ALBUM RECORD HAS BEEN DELETE');
+END;
+
